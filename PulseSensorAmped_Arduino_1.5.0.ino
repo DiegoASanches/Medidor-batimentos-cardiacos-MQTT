@@ -33,7 +33,7 @@ EthernetClient ethClient;
 PubSubClient mqttClient(ethClient);
 
 const char* mqttUser = "diegoasancheess@gmail.com";
-const char* mqttPassword = "Extensao@01";
+const char* mqttPassword = "teste123";
 
 //  Variables
 int pulsePin = 0;                 // Pulse Sensor purple wire connected to analog pin 0
@@ -70,7 +70,7 @@ void setup() {
   Ethernet.begin(mac);
 
   // Ethernet takes some time to boot!
-  delay(3000);
+  delay(100);
 
   // Set the MQTT server to the server stated above ^
   mqttClient.setServer(server, 1883);
@@ -110,9 +110,19 @@ void loop() {
     serialOutputWhenBeatHappens();   // A Beat Happened, Output that to serial.
     QS = false;                      // reset the Quantified Self flag for next time
 
-    // Attempt to publish a value to the topic "MakerIOTopic"
-    String bpmString = "";
-    if (mqttClient.publish("/nodejs/mqtt", BPM))
+    // Define
+    String str = String(BPM);
+
+    // Length (with one extra character for the null terminator)
+    int str_len = str.length() + 1;
+
+    // Prepare the character array (the buffer)
+    char char_array[str_len];
+
+    // Copy it over
+    str.toCharArray(char_array, str_len);
+    
+    if (mqttClient.publish("/nodejs/mqtt", (char*) str.c_str()))
     {
       Serial.println("Publish message success");
     }
